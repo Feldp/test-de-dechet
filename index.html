@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" questions="IE=edge">
+    <meta name="viewport" questions="width=device-width, initial-scale=1.0">
+    <title>Test de Dechet</title>
+    <link rel="icon" href="./fav.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap" rel="stylesheet"> 
+
+    <style>
+        body {
+            font-family: 'Roboto Slab', serif;
+        }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+        input[type=number] {
+            -moz-appearance:textfield;
+        }
+    </style>
+</head>
+<body class="bg-white">
+
+    <main class="h-screen mt-4">
+        <div class="lg:w-11/12 h-4/5 min-h-max lg:rounded-3xl mx-auto bg-gray-900 text-white flex flex-col justify-center text-center p-4 shadow-xl">
+
+            <div id="main" class="text-center flex flex-col">
+                <h3 id="question" class="lg:text-4xl text-6xl p-8">Complète ce test pour découvrir si-tu es un vrai déchet !</h3> 
+                <div id="nbInput"></div>
+                <button id="next" class="bg-blue-600 lg:text-3xl text-5xl rounded-lg p-4 mt-8 shadow hover:bg-blue-700 focus:outline-none mx-auto transition duration-150">Commencer le test</button>           
+            </div>
+
+        </div>
+    </main>
+
+    <div class="lg:w-11/12 mx-auto pl-4 -mt-16"><span>Version alpha 0.1</span></div>
+</body>
+
+
+<script>
+    numberInput = 
+    `<div id="nbInput" class=" custom-number-input text-black text-4xl lg:w-48 w-96 flex flex-row rounded-l-full rounded-r-full mx-auto">
+        <div class="flex flex-row h-14 rounded-l-full rounded-r-full">
+            <button id="decr" data-action="decrement" class="hover:bg-gray-100 font-bold bg-white w-20 rounded-l-full cursor-pointer focus:outline-none transition duration-250">-</button>
+            <input id="value" type="number" min="0" oninput="validity.valid||(value='');" class="focus:outline-none text-center w-full bg-white" name="custom-input-number" value="0"></input>
+            <button id="incr" data-action="increment" class="hover:bg-gray-100 bg-white w-20 rounded-r-full cursor-pointer focus:outline-none transition duration-250">+</button>
+        </div>
+    </div>`;
+
+    questions = {
+    1 : `Combien d'heures restes-tu assis chaque jour ?`
+    ,2 : `Combien d'heures passes-tu sur ton téléphone chaque jour ?`
+    ,3 : `Combien d'heures passes-tu sur des jeux-vidéos chaque jour ?`
+    ,4 : `Combien de cigarettes fumes-tu chaque jour ?`
+    ,5 : `Combien d'heures de divertissement consommes-tu chaque jour ?`
+    ,6 : `Combien de fois regardes-tu du porno par semaine ?`
+    ,7 : `Combien de de verres d'alcool consommes-tu par semaine ?`
+    ,8 : `Combien de fois consommes-tu de la drogue par semaine ?`
+    ,9 : `Combien de fois te couches-tu après minuit par semaine ?`
+    ,10 : `Combien de fois as-tu procrastiner au cours de cette semaine ?`
+    };
+
+    blueButton = `Question suivante`
+
+    let score = 1;
+    let curr = 1;
+
+    function updateButton() {
+        nextButton = document.getElementById("next");
+        question = document.getElementById("question");
+        decrementButton = document.getElementById('decr');
+        incrementButton = document.getElementById('incr');
+        nbInput = document.getElementById("nbInput");
+
+        nextButton.addEventListener("click", nextQuestion);
+        decrementButton.addEventListener("click", decrement);
+        incrementButton.addEventListener("click", increment);
+    }
+
+    function updateScore() {
+        const target = document.getElementById("value");
+        if (target) {
+            let value = Number(target.value);
+            score += value;
+        }
+        console.log(score);
+    }
+
+    function finishTest() {
+        let nom = undefined;
+        if (score < 10)
+            nom = 'de Chad'
+        else if (score < 20)
+            nom = 'Saine'
+        else if (score < 30)
+            nom = 'Malsaine'
+        else if (score < 40)
+            nom = 'de Gros déchet'
+        else if (score < 40)
+            nom = "d'Énorme déchet"
+        else if (score > 50)
+            nom = 'de Turbo golemax'
+
+        finish = `<h3 id="question" class="lg:text-4xl text-6xl p-8">Score: ${score*10}, tu as un vie <span class="text-blue-600">${nom}</span></h3> 
+                <p class="lg:text-2xl text-4xl">Rejoins ce serveur Discord pour gamifier tes bonnes habitudes:</p>
+                <a href="https://discord.gg/JJACjAFtb7" class="text-blue-600 font-bold mt-4 lg:text-4xl text-6xl">Discord.gg/JJACjAFtb7</a>
+                <div id="nbInput"></div>`
+        const main = document.getElementById("main");
+        main.innerHTML = finish;
+    }
+
+    function nextQuestion() {
+        updateScore();
+        if (curr <= 10) {
+            question.innerText = questions[curr];
+            nbInput.innerHTML = numberInput;
+            nextButton.innerText = blueButton;
+        }
+        else {
+            finishTest();
+        }
+
+        updateButton();
+        curr += 1;
+    }
+
+    function decrement(e) {
+      const btn = e.target.parentNode.parentElement.querySelector(
+        'button[data-action="decrement"]'
+      );
+      const target = btn.nextElementSibling;
+      let value = Number(target.value);
+      if (value > 0)
+        value--;
+      target.value = value;
+    }
+  
+    function increment(e) {
+      const btn = e.target.parentNode.parentElement.querySelector(
+        'button[data-action="decrement"]'
+      );
+      const target = btn.nextElementSibling;
+      let value = Number(target.value);
+      value++;
+      target.value = value;
+    }
+
+    let nextButton = document.getElementById("next");
+    let question = document.getElementById("question");
+    // let decrementButton = document.getElementById('decr');
+    // let incrementButton = document.getElementById('incr');
+    // let nbInput = document.getElementById("nbInput");
+    // if (curr == 1)
+    //         nbInput.classList.add("hidden");
+
+    nextButton.addEventListener("click", nextQuestion);
+    // decrementButton.addEventListener("click", decrement);
+    // incrementButton.addEventListener("click", increment);
+  </script>
+</html>
